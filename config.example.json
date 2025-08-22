@@ -1,0 +1,29 @@
+{
+  "defaultWiki": "localhost:8080",
+  "wikis": {
+    "localhost:8080": {
+      "sitename": "Local MediaWiki",
+      "server": "http://localhost:8080",
+      "articlepath": "/wiki",
+      "scriptpath": "/w",
+      "username": "WikiBot",
+      "password": "your-bot-password"
+    },
+    "192.168.212.10:8082": {
+      "sitename": "Test Wiki 2",
+      "server": "http://192.168.212.10:8082",
+      "articlepath": "/index.php",
+      "scriptpath": "",
+      "username": "MCP",
+      "password": "!!mcpserver!!"
+    },
+    "wiki.example.com": {
+      "sitename": "Production Wiki",
+      "server": "https://wiki.example.com",
+      "articlepath": "/wiki",
+      "scriptpath": "/w", 
+      "username": "APIBot",
+      "password": "secure-password-here"
+    }
+  }
+}

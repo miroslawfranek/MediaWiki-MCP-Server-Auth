@@ -1,0 +1,56 @@
+{
+  "name": "@open-e/mediawiki-mcp-server-auth",
+  "version": "1.0.0",
+  "description": "MediaWiki MCP Server with Username/Password Authentication - Modified version supporting session-based authentication",
+  "keywords": [
+    "modelcontextprotocol",
+    "mcp",
+    "mediawiki",
+    "authentication",
+    "session-based",
+    "username-password"
+  ],
+  "homepage": "https://github.com/Open-E/MediaWiki-MCP-Server-Auth",
+  "license": "GPL-2.0-or-later",
+  "author": {
+    "name": "Open-E",
+    "url": "https://www.open-e.com"
+  },
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "INSTALL.md",
+    "config.example.json"
+  ],
+  "main": "dist/index.js",
+  "bin": {
+    "mediawiki-mcp-server-auth": "dist/index.js"
+  },
+  "scripts": {
+    "build": "echo 'Build completed - files already in dist/'",
+    "start": "node dist/index.js",
+    "test": "node test/test-auth.js",
+    "install-global": "npm install -g .",
+    "setup-config": "node scripts/setup-config.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.11.3",
+    "express": "^5.1.0",
+    "node-fetch": "^3.3.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.2",
+    "@types/node": "^22.15.17",
+    "@types/node-fetch": "^2.6.12",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Open-E/MediaWiki-MCP-Server-Auth.git"
+  }
+}
