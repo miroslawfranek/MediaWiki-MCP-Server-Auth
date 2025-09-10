@@ -1,6 +1,6 @@
 {
 	"name": "@open-e/mediawiki-mcp-server-auth",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "MediaWiki MCP Server with Username/Password Authentication - Modified version supporting session-based authentication",
 	"keywords": [
 		"modelcontextprotocol",
@@ -44,7 +44,7 @@
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "^1.11.3",
 		"express": "^5.1.0",
-		"node-fetch": "^3.3.2",
+		"node-fetch": "^3.3.8",
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
