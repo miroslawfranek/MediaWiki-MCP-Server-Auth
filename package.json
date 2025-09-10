@@ -1,6 +1,6 @@
 {
 	"name": "@open-e/mediawiki-mcp-server-auth",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "MediaWiki MCP Server with Username/Password Authentication - Modified version supporting session-based authentication",
 	"keywords": [
 		"modelcontextprotocol",
@@ -51,11 +51,10 @@
 		"@types/express": "^5.0.2",
 		"@types/node": "^22.15.17",
 		"@types/node-fetch": "^2.6.12",
-		"@typescript-eslint/eslint-plugin": "^7.18.0",
-		"@typescript-eslint/parser": "^7.18.0",
-		"@wmde/eslint-config-wikimedia-typescript": "^0.2.13",
+		"@typescript-eslint/eslint-plugin": "^8.18.0",
+		"@typescript-eslint/parser": "^8.18.0",
 		"concurrently": "^9.1.2",
-		"eslint-config-wikimedia": "^0.29.1",
+		"eslint": "^9.17.0",
 		"typescript": "^5.8.3"
 	}
 }
