@@ -173,6 +173,47 @@ export async function makeRestPostRequest<T>(
 	}
 }
 
+/**
+ * New session-based API request function for MediaWiki API endpoints
+ * Uses session cookies and CSRF tokens for authentication
+ */
+export async function makeSessionApiRequest(
+	params: Record<string, string>,
+	needAuth: boolean = false
+): Promise<any> {
+	if ( needAuth ) {
+		const authResult = await sessionManager.authenticate();
+		if ( !authResult ) {
+			throw new Error( 'Authentication failed' );
+		}
+	}
+
+	const headers: Record<string, string> = {
+		'User-Agent': USER_AGENT,
+		'Content-Type': 'application/x-www-form-urlencoded'
+	};
+
+	if ( needAuth ) {
+		headers.Cookie = sessionManager.getCookies();
+		params.token = sessionManager.getEditToken();
+	}
+
+	const body = new URLSearchParams( params ).toString();
+
+	const response = await fetch( `${ wikiServer() }${ scriptPath() }/api.php`, {
+		method: 'POST',
+		headers: headers,
+		body: body
+	} );
+
+	if ( !response.ok ) {
+		const errorBody = await response.text().catch( () => 'Could not read error response body' );
+		throw new Error( `HTTP error! status: ${ response.status } for URL: ${ response.url }. Response: ${ errorBody }` );
+	}
+
+	return await response.json();
+}
+
 export async function fetchPageHtml( url: string ): Promise<string | null> {
 	try {
 		const response = await fetchCore( url );
