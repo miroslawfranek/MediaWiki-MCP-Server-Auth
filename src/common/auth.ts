@@ -18,10 +18,19 @@ interface LoginTokenResponse {
 	};
 }
 
+interface EditTokenResponse {
+	query: {
+		tokens: {
+			csrftoken: string;
+		};
+	};
+}
+
 class SessionManager {
 	private cookies: string[] = [];
 	private authenticated = false;
 	private lastAuthCheck = 0;
+	private editToken: string = '';
 	private readonly AUTH_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 	async isAuthenticated(): Promise<boolean> {
@@ -44,6 +53,10 @@ class SessionManager {
 		}
 		
 		return this.authenticated;
+	}
+
+	async authenticate(): Promise<boolean> {
+		return await this.isAuthenticated();
 	}
 
 	private async getLoginToken(): Promise<string | null> {
@@ -74,6 +87,34 @@ class SessionManager {
 			return data.query?.tokens?.logintoken || null;
 		} catch (error) {
 			console.error('Error getting login token:', error);
+			return null;
+		}
+	}
+
+	private async getEditToken(): Promise<string | null> {
+		try {
+			const response = await fetch(`${wikiServer()}${scriptPath()}/api.php`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'User-Agent': USER_AGENT,
+					'Cookie': this.cookies.join('; ')
+				},
+				body: new URLSearchParams({
+					action: 'query',
+					meta: 'tokens',
+					format: 'json'
+				})
+			});
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+
+			const data = await response.json() as EditTokenResponse;
+			return data.query?.tokens?.csrftoken || null;
+		} catch (error) {
+			console.error('Error getting edit token:', error);
 			return null;
 		}
 	}
@@ -124,6 +165,10 @@ class SessionManager {
 			if (data.clientlogin?.status === 'PASS') {
 				this.authenticated = true;
 				this.lastAuthCheck = Date.now();
+				
+				// Get edit token after successful login
+				this.editToken = await this.getEditToken() || '';
+				
 				return true;
 			} else {
 				console.error('Login failed:', data.clientlogin?.message || data.clientlogin?.messagecode);
@@ -156,10 +201,15 @@ class SessionManager {
 		return this.cookies.join('; ');
 	}
 
+	getEditToken(): string {
+		return this.editToken;
+	}
+
 	logout(): void {
 		this.cookies = [];
 		this.authenticated = false;
 		this.lastAuthCheck = 0;
+		this.editToken = '';
 	}
 }
 
