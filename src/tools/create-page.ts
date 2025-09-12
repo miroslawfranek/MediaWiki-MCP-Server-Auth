@@ -3,8 +3,7 @@ import { z } from 'zod';
 import type { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { CallToolResult, TextContent, ToolAnnotations } from '@modelcontextprotocol/sdk/types.js';
 /* eslint-enable n/no-missing-import */
-import { makeRestPostRequest, getPageUrl } from '../common/utils.js';
-import type { MwRestApiPageObject } from '../types/mwRestApi.js';
+import { makeSessionApiRequest, getPageUrl } from '../common/utils.js';
 
 export function createPageTool( server: McpServer ): RegisteredTool {
 	return server.tool(
@@ -33,15 +32,18 @@ async function handleCreatePageTool(
 	comment?: string,
 	contentModel?: string
 ): Promise<CallToolResult> {
-	let data: MwRestApiPageObject | null = null;
+	let data: any = null;
 
 	try {
-		data = await makeRestPostRequest<MwRestApiPageObject>( '/v1/page', {
-			source: source,
+		// Use session-based API with edit action (which can create pages)
+		data = await makeSessionApiRequest( {
+			action: 'edit',
 			title: title,
-			comment: comment || '',
-			// eslint-disable-next-line camelcase
-			content_model: contentModel
+			text: source,
+			summary: comment || 'Created via MCP',
+			createonly: 'true', // This ensures we only create, not update existing
+			contentmodel: contentModel || 'wikitext',
+			format: 'json'
 		}, true );
 	} catch ( error ) {
 		return {
@@ -61,28 +63,35 @@ async function handleCreatePageTool(
 		};
 	}
 
+	if ( data.error ) {
+		return {
+			content: [
+				{ type: 'text', text: `Failed to create page: ${ data.error.info }` } as TextContent
+			],
+			isError: true
+		};
+	}
+
 	return {
-		content: createPageToolResult( data )
+		content: createPageToolResultSession( data, title )
 	};
 }
 
-function createPageToolResult( result: MwRestApiPageObject ): TextContent[] {
+function createPageToolResultSession( result: any, title: string ): TextContent[] {
 	return [
 		{
 			type: 'text',
-			text: `Page created successfully: ${ getPageUrl( result.title ) }`
+			text: `Page created successfully: ${ getPageUrl( title ) }`
 		},
 		{
 			type: 'text',
 			text: [
-				'Page object:',
-				`Page ID: ${ result.id }`,
-				`Title: ${ result.title }`,
-				`Latest revision ID: ${ result.latest.id }`,
-				`Latest revision timestamp: ${ result.latest.timestamp }`,
-				`Content model: ${ result.content_model }`,
-				`License: ${ result.license.url } ${ result.license.title }`,
-				`HTML URL: ${ result.html_url }`
+				'Create result:',
+				`Result: ${ result.edit?.result || 'Success' }`,
+				`Page ID: ${ result.edit?.pageid || 'N/A' }`,
+				`Title: ${ title }`,
+				`New revision ID: ${ result.edit?.newrevid || 'N/A' }`,
+				`Timestamp: ${ result.edit?.newtimestamp || 'N/A' }`
 			].join( '\n' )
 		}
 	];
