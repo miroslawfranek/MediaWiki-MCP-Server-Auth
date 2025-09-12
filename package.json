@@ -1,6 +1,6 @@
 {
-	"name": "@open-e/mediawiki-mcp-server-auth",
-	"version": "1.0.3",
+	"name": "@miroslaw.franek/mediawiki-mcp-server-auth",
+	"version": "1.0.1",
 	"description": "MediaWiki MCP Server with Username/Password Authentication - Modified version supporting session-based authentication",
 	"keywords": [
 		"modelcontextprotocol",
